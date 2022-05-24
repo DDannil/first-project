@@ -3,8 +3,10 @@
         <button v-on:click="formVisible = !formVisible">Add New Cost +</button>
     <div v-show="formVisible" class="form-wrp">
         <input v-model="date" placeholder="date">
-        <input v-model="category" placeholder="category">
-        <input v-model="value" placeholder="value">
+        <select v-model="category" v-if="categoryList">
+            <option v-for="(value, idx) in categoryList" :key="idx">{{value}}</option>
+        </select>
+        <input v-model.number="value" placeholder="value">
         <button @click="onClickSave">Save</button>
     </div>
     </div>
@@ -32,6 +34,9 @@ export default {
             } else {
                 return `${d}.${m}.${y}`
             }
+            },
+            categoryList(){
+                return this.$store.getters.getCategoryList
             }
     },
     methods: {
@@ -41,9 +46,11 @@ export default {
                 category: this.category,
                 value: this.value
             }
-            this.$emit('addNewPayment', data)
-            console.log(data);
+            this.$store.commit('addDataToPaimentList', data)
         },
+        async created() {
+            await this.$store.dispatch('fetchCategoryList')
+        }
     }
 }
 </script>
